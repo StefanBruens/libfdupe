@@ -1,5 +1,6 @@
 
 add_library(fdupe
+            filecompare.cpp
             filefinder.cpp
             files.cpp
             fletcher.cpp
