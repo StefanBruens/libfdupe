@@ -71,18 +71,14 @@ int FileFinder::traverseDirectory(int dirfd, const Directory* dir)
             }
 
             File child(name, fileinfo, dir);
-            auto range = m_seenFiles.equal_range(child.size());
-            if (range.first == m_seenFiles.end())
-                range.first = range.second;
-            auto match = std::any_of(range.first, range.second,
-                [&child](std::pair<const off_t, std::unique_ptr<File>>& o) { return *(o.second) == child; });
+            auto key = std::make_tuple(fileinfo.st_size, fileinfo.st_ino, fileinfo.st_dev);
+            auto match = m_seenFiles.count(key);
 
             if (match) {
                 //std::cerr << "Known " << child << std::endl;
             } else {
                 //std::cerr << child << std::endl;
-                m_seenFiles.emplace_hint(range.second,
-                    child.size(), std::unique_ptr<File>(new File(child)));
+                m_seenFiles.emplace(key, std::unique_ptr<File>(new File(child)));
             }
 
         } else if (S_ISLNK(fileinfo.st_mode)) {
@@ -188,8 +184,8 @@ FileFinder::examinePathComponent(int dirfd, const Directory* parentDir, std::vec
         File child(c, fileinfo, parentDir);
         std::cerr << child << std::endl;
 
-        auto it = std::find_if(m_seenFiles.begin(), m_seenFiles.end(),
-            [&child](std::pair<const off_t, std::unique_ptr<File>>& o) { return *(o.second) == child; });
+        auto key = std::make_tuple(fileinfo.st_size, fileinfo.st_ino, fileinfo.st_dev);
+        auto it = m_seenFiles.find(key);
         if (it != m_seenFiles.end()) {
             std::cerr << "Known " << *(it->second) << std::endl;
             // FIXME: add as alias
@@ -197,7 +193,7 @@ FileFinder::examinePathComponent(int dirfd, const Directory* parentDir, std::vec
             return (*it).second.get();
         }
 
-        it = m_seenFiles.emplace(child.size(), std::unique_ptr<File>(new File(child)));
+        it = m_seenFiles.emplace_hint(it, key, std::unique_ptr<File>(new File(child)));
         close(pathfd);
         return (*it).second.get();
 

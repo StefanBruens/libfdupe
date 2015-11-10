@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 #include <map>
 #include <memory>
 #include <sys/stat.h>
@@ -59,7 +60,7 @@ private:
 
     std::map< std::pair<ino_t, dev_t>, std::unique_ptr<const Directory>> m_seenDirectories;
     std::map< std::pair<ino_t, dev_t>, std::unique_ptr<const Symlink>> m_seenLinks;
-    std::multimap<off_t, std::unique_ptr<File>> m_seenFiles;
+    std::map< std::tuple<off_t, ino_t, dev_t>, std::unique_ptr<File>> m_seenFiles;
 };
 
 } // namespace LibFDupe
