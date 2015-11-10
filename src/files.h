@@ -18,6 +18,7 @@ public:
     bool operator==(const DirEnt& other) const;
     virtual ~DirEnt();
     virtual std::string path() const;
+    const std::string& name() const { return m_name; }
     ino_t inode() const;
     dev_t device() const;
 

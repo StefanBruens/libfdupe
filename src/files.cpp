@@ -17,12 +17,14 @@ DirEnt::DirEnt(const std::string& name, const struct stat& stat, const DirEnt* p
 DirEnt::~DirEnt() {}
 
 Directory::Directory(const std::string& name, const struct stat& stat, const DirEnt* parent)
-    : DirEnt(name, stat, parent)
+    : DirEnt(std::string(), stat, parent)
 {
     if (parent) {
-        m_name = m_parent->path() + name + "/";
-    } else if (m_name.back() != '/') {
-        m_name.push_back('/');
+        m_name = m_parent->name() + name + "/";
+    } else {
+        m_name = name;
+        if (m_name.back() != '/')
+            m_name.push_back('/');
     }
 }
 
@@ -40,7 +42,7 @@ std::string
 DirEnt::path() const
 {
     if (m_parent)
-         return m_parent->path() + m_name;
+         return m_parent->name() + m_name;
 
     return m_name;
 }
@@ -94,13 +96,16 @@ off_t File::size() const
 inline
 void File::dump(std::ostream& stream) const
 {
-    stream << " F: " << path();
+    stream << " F: ";
+    if (m_parent)
+         stream << m_parent->name();
+    stream << m_name;
 }
 
 inline
 void Directory::dump(std::ostream& stream) const
 {
-    stream << " D:" << path();
+    stream << " D:" << name();
 }
 
 inline
