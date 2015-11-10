@@ -33,7 +33,7 @@ HashFile::map()
     if (mapaddr)
         return true;
     // std::cout << "map() @" << this << " " << file << *file << std::endl;
-    fd = open(file->path().c_str(), O_RDONLY);
+    fd = file->open();
     if (fd < 0)
         return false;
     mapaddr = reinterpret_cast<uint8_t*>(

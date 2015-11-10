@@ -45,6 +45,7 @@ class File : public DirEnt
 public:
     File(const std::string& name, const struct stat& stat, const DirEnt* parent);
     off_t size() const;
+    int open() const;
 
 private:
     virtual void dump(std::ostream& stream) const;

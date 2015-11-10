@@ -79,6 +79,15 @@ off_t File::size() const
     return m_stat.st_size;
 }
 
+int File::open() const
+{
+    std::string p;
+    p.reserve(m_parent->name().size() + m_name.size());
+    p += m_parent->name();
+    p += m_name;
+    return ::open(p.c_str(), O_RDONLY);
+}
+
 inline
 void File::dump(std::ostream& stream) const
 {
