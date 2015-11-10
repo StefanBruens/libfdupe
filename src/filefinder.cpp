@@ -239,9 +239,10 @@ FileFinder::files()
     std::vector<std::unique_ptr<File>> files;
     files.reserve(m_seenFiles.size());
 
-    std::for_each(m_seenFiles.begin(), m_seenFiles.end(),
-        [&files](std::pair<const off_t, std::unique_ptr<File>>& o)
-        { files.emplace_back(std::move(o.second)); });
+    for(auto& o :  m_seenFiles) {
+        files.emplace_back(std::move(o.second));
+    }
+
     std::cout << "Copied " << files.size() << std::endl;
     m_seenFiles.clear();
     return files;
