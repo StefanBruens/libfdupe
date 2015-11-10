@@ -63,20 +63,6 @@ Directory::path() const
     return m_name;
 }
 
-bool
-DirEnt::operator==(const DirEnt& other) const
-{
-    return (inode() == other.inode()) &&
-           (device() == other.device());
-}
-
-bool
-Directory::operator==(const Directory& other) const
-{
-    return (inode() == other.inode()) &&
-           (device() == other.device());
-}
-
 std::ostream& operator<<(std::ostream& stream, const DirEnt& dirent)
 {
     dirent.dump(stream);

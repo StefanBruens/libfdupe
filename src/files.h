@@ -15,7 +15,6 @@ public:
     DirEnt(const std::string& name);
     DirEnt(const std::string& name, const struct stat& stat, const DirEnt* parent);
     friend std::ostream& operator<<(std::ostream& stream, const DirEnt& dirent);
-    bool operator==(const DirEnt& other) const;
     virtual ~DirEnt();
     virtual std::string path() const;
     const std::string& name() const { return m_name; }
