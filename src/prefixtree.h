@@ -47,6 +47,7 @@ public:
     PrefixTreeNodeBase(HashType hash) : hashValue(hash) {};
     PrefixTreeNodeBase(HashType hash, HashFile&& file) : hashValue(hash)
     {
+        files.reserve(2);
         files.emplace_back(std::move(file));
     }
 

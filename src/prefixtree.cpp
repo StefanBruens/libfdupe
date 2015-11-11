@@ -113,6 +113,7 @@ PrefixTreeNode::insertRight(const HashFile& left, HashFile&& right, off_t offset
 
         } else {
             if (tree.nodes.empty()) {
+                tree.nodes.reserve(2);
                 tree.nodes.emplace_back(0);
                 //std::cout << "N @" << offset << ": " << files.size() << std::endl;
                 std::swap(files, tree.nodes[0].files);
@@ -122,6 +123,7 @@ PrefixTreeNode::insertRight(const HashFile& left, HashFile&& right, off_t offset
         }
     } else {
         if (tree.nodes.empty()) {
+            tree.nodes.reserve(2);
             tree.nodes.emplace_back(0);
             //std::cout << "N2 @" << offset << ": " << files.size() << std::endl;
             std::swap(files, tree.nodes[0].files);
@@ -139,6 +141,7 @@ PrefixTree::insertFile(HashFile&& file, off_t offset)
 {
     if (nodes.empty()) {
         std::cout << "I  " << file.size() << ": " << *file.file << std::endl;
+        nodes.reserve(2);
         nodes.emplace_back(0, std::move(file));
         return;
     }
