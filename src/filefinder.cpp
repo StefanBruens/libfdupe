@@ -70,15 +70,15 @@ int FileFinder::traverseDirectory(int dirfd, const Directory* dir)
                 continue;
             }
 
-            File child(name, fileinfo, dir);
             auto key = std::make_tuple(fileinfo.st_size, fileinfo.st_ino, fileinfo.st_dev);
-            auto match = m_seenFiles.count(key);
+            auto it = m_seenFiles.lower_bound(key);
 
-            if (match) {
+            if ((it != m_seenFiles.end()) && it->first == key) {
                 //std::cerr << "Known " << child << std::endl;
             } else {
                 //std::cerr << child << std::endl;
-                m_seenFiles.emplace(key, std::unique_ptr<File>(new File(child)));
+                File child(name, fileinfo, dir);
+                m_seenFiles.emplace_hint(it, key, std::unique_ptr<File>(new File(child)));
             }
 
         } else if (S_ISLNK(fileinfo.st_mode)) {
@@ -181,18 +181,19 @@ FileFinder::examinePathComponent(int dirfd, const Directory* parentDir, std::vec
         if (components.size() > 1) {
             // error
         }
-        File child(c, fileinfo, parentDir);
-        std::cerr << child << std::endl;
 
         auto key = std::make_tuple(fileinfo.st_size, fileinfo.st_ino, fileinfo.st_dev);
-        auto it = m_seenFiles.find(key);
-        if (it != m_seenFiles.end()) {
+        auto it = m_seenFiles.lower_bound(key);
+
+        if ((it != m_seenFiles.end()) && it->first == key) {
             std::cerr << "Known " << *(it->second) << std::endl;
             // FIXME: add as alias
             close(pathfd);
             return (*it).second.get();
         }
 
+        File child(c, fileinfo, parentDir);
+        //std::cerr << child << std::endl;
         it = m_seenFiles.emplace_hint(it, key, std::unique_ptr<File>(new File(child)));
         close(pathfd);
         return (*it).second.get();
